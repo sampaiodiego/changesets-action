@@ -428,7 +428,8 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
     cwd,
   });
 
-  const { version } = require(resolveFrom(cwd, "package.json")); //require("../package.json");
+  const mainPackageJson = await fs.readFile('../package.json', "utf8");
+  const { version } = JSON.parse(mainPackageJson);
 
   let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
   const branch = 'main'; // TODO main for next or "base" for patch (old value github.context.ref.replace("refs/heads/", "");)
