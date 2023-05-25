@@ -11,6 +11,8 @@ on:
         options:
         - next
         - patch
+        - cut release candidate
+        - cut final release
       base-ref:
         description: Base version
         default: master

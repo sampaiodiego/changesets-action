@@ -50,11 +50,12 @@ const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
   switch (true) {
     case nextRelease: {
-      if (!hasChangesets) {
+      const type = core.getInput('nextReleaseType');
+
+      if (type === 'next' && !hasChangesets) {
         core.warning('No changesets found for next release, skipping');
         return;
       }
-      const type = core.getInput('nextReleaseType');
 
       core.info(`Proceeding with next release (type ${type})`);
 

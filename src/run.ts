@@ -419,6 +419,23 @@ export async function runVersion({
   }
 }
 
+export async function createReleaseBranch() {
+  const { version: currentVersion } = require('../package.json');
+
+  const nextVersion = semver.inc(currentVersion, 'patch');
+
+  core.info('nextVersion ->' + nextVersion);
+
+  const versionBranch = `release-${nextVersion}`;
+
+  console.log('versionBranch ->', versionBranch);
+
+  // the base branch will be the one that triggered the workflow
+  await gitUtils.switchToMaybeExistingBranch(versionBranch);
+
+  await gitUtils.push(versionBranch, { force: true });
+}
+
 export async function runNextRelease({ githubToken, type }: { githubToken: string; type: string }) {
   const cwd = process.cwd();
 
@@ -426,6 +443,13 @@ export async function runNextRelease({ githubToken, type }: { githubToken: strin
 
   const base = github.context.ref.replace("refs/heads/", "");
   core.info('base ->' + base);
+
+  // for patches we just need to start it up, creating the branch with the correct name
+  // after that, people will start cherry-picking changes into it
+  if (type === 'patch') {
+    await createReleaseBranch();
+    return;
+  }
 
   // for regular release we first cut a release-candidate
   if (type === 'next') {
@@ -460,6 +484,11 @@ export async function runNextRelease({ githubToken, type }: { githubToken: strin
   }
 
   await gitUtils.push(versionBranch, { force: true });
+
+  if (type !== 'next') {
+    core.info("patch release doesn't have a pull request");
+    return;
+  }
 
   let searchQuery = `repo:${repo}+state:open+head:${versionBranch}+base:${base}+is:pull-request`;
   let searchResultPromise = octokit.rest.search.issuesAndPullRequests({
