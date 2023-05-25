@@ -476,7 +476,7 @@ export async function runNextRelease({ githubToken, type, base }: { githubToken:
   // for patches we just need to start it up, creating the branch with the correct name
   // after that, people will start cherry-picking changes into it
   if (type === 'patch') {
-    await createReleaseBranch({ base });
+    await createReleaseBranch({ githubToken, base });
     return;
   }
 
