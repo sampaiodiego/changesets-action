@@ -455,17 +455,17 @@ export async function createReleaseBranch({ githubToken, base }: { githubToken: 
 
   const octokit = setupOctokit(githubToken);
 
-  const result = await octokit.request(`POST /repos/{owner}/{repo}/git/refs`, {
-    owner: github.context.repo.owner,
-    repo: github.context.repo.repo,
-    ref: `refs/heads/${versionBranch}`,
-    sha,
-    headers: {
-      'X-GitHub-Api-Version': '2022-11-28'
-    }
-  });
-
-  core.info('result ->' + JSON.stringify(result, null, 2));
+  try {
+    const result = await octokit.rest.git.createRef({
+      ref: `refs/heads/${versionBranch}`,
+      sha,
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+    });
+    core.info('result ->' + JSON.stringify(result, null, 2));
+  } catch (error) {
+    core.info('error ->' + JSON.stringify(error, null, 2));
+  }
 }
 
 export async function runNextRelease({ githubToken, type, base }: { githubToken: string; type: string; base: string }) {
