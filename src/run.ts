@@ -442,30 +442,29 @@ export async function createReleaseBranch({ githubToken, base }: { githubToken: 
   core.info('nextVersion ->' + nextVersion);
 
   const versionBranch = `release-${nextVersion}`;
+  console.log('versionBranch ->', versionBranch);
 
-  // console.log('versionBranch ->', versionBranch);
+  // the base branch will be the one that triggered the workflow
+  await gitUtils.switchToMaybeExistingBranch(versionBranch);
 
-  // // the base branch will be the one that triggered the workflow
-  // await gitUtils.switchToMaybeExistingBranch(versionBranch);
+  const { stdout: status } = await getExecOutput("git", ["status"]);
+  core.info(status);
 
-  // const { stdout } = await getExecOutput("git", ["status"]);
-  // core.info(stdout);
+  await gitUtils.push(versionBranch);
 
-  // await gitUtils.push(versionBranch, { force: true });
+  // const octokit = setupOctokit(githubToken);
 
-  const octokit = setupOctokit(githubToken);
-
-  try {
-    const result = await octokit.rest.git.createRef({
-      ref: `refs/heads/${versionBranch}`,
-      sha,
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-    });
-    core.info('result ->' + JSON.stringify(result, null, 2));
-  } catch (error) {
-    core.info('error ->' + JSON.stringify(error, null, 2));
-  }
+  // try {
+  //   const result = await octokit.rest.git.createRef({
+  //     ref: `refs/heads/${versionBranch}`,
+  //     sha,
+  //     owner: github.context.repo.owner,
+  //     repo: github.context.repo.repo,
+  //   });
+  //   core.info('result ->' + JSON.stringify(result, null, 2));
+  // } catch (error) {
+  //   core.info('error ->' + JSON.stringify(error, null, 2));
+  // }
 }
 
 export async function runNextRelease({ githubToken, type, base }: { githubToken: string; type: string; base: string }) {
