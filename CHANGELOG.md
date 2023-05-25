@@ -1,5 +1,13 @@
 # @changesets/action
 
+## 1.4.5
+
+### Patch Changes
+
+- [`1257194`](https://github.com/changesets/action/commit/1257194a6c30362a43e48bb9ddd953a045cac7c2) Thanks [@sampaiodiego](https://github.com/sampaiodiego)! - Adding a patch change set.
+
+  This is just for testing the new action.
+
 ## 1.4.4
 
 ### Patch Changes
