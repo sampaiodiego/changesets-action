@@ -59,7 +59,7 @@ const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
       core.info(`Proceeding with next release (type ${type})`);
 
-      runNextRelease({ githubToken, type });
+      runNextRelease({ githubToken, type, base: core.getInput('nextReleaseBase') || 'main' });
       return;
     }
     case !hasChangesets && !hasPublishScript:

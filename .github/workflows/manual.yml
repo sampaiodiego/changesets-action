@@ -24,8 +24,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.inputs.base-ref }}
 
     - name: Use Node.js 16
       uses: actions/setup-node@v1
@@ -38,11 +36,12 @@ jobs:
     - name: Build
       run: yarn build
 
-    - name: Try out next release
+    - name: Trigger next release
       id: changesets
       uses: ./
       with:
         nextRelease: true
         nextReleaseType: ${{ github.event.inputs.release-type }}
+        nextReleaseBase: ${{ github.event.inputs.base-ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

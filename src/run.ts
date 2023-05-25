@@ -419,8 +419,15 @@ export async function runVersion({
   }
 }
 
-export async function createReleaseBranch() {
-  const { version: currentVersion } = require('../package.json');
+export async function createReleaseBranch({ base }: { base: string}) {
+  const cwd = process.cwd();
+  // const { version: currentVersion } = require('../package.json');
+
+  core.info('base ->' + base);
+  await exec("git", ["checkout", base]);
+
+  const mainPackageJson = await fs.readFile(path.resolve(cwd, 'package.json'), "utf8");
+  const { version: currentVersion } = JSON.parse(mainPackageJson);
 
   const nextVersion = semver.inc(currentVersion, 'patch');
 
@@ -436,18 +443,18 @@ export async function createReleaseBranch() {
   await gitUtils.push(versionBranch, { force: true });
 }
 
-export async function runNextRelease({ githubToken, type }: { githubToken: string; type: string }) {
+export async function runNextRelease({ githubToken, type, base }: { githubToken: string; type: string; base: string }) {
   const cwd = process.cwd();
 
   const octokit = setupOctokit(githubToken);
 
-  const base = github.context.ref.replace("refs/heads/", "");
+  // const base = github.context.ref.replace("refs/heads/", "");
   core.info('base ->' + base);
 
   // for patches we just need to start it up, creating the branch with the correct name
   // after that, people will start cherry-picking changes into it
   if (type === 'patch') {
-    await createReleaseBranch();
+    await createReleaseBranch({ base });
     return;
   }
 

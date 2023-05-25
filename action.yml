@@ -36,6 +36,10 @@ inputs:
     description: "The type of the next release. Possible values are: `next` or `patch`. Default to `patch`"
     required: false
     default: "patch"
+  nextReleaseBase:
+    description: "The base branch/version for the next release."
+    required: false
+    default: "main"
 outputs:
   published:
     description: A boolean value to indicate whether a publishing is happened or not
