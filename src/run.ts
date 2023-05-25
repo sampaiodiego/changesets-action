@@ -436,7 +436,7 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
   core.info('version ->' + version);
   core.info('branch ->' + branch);
 
-  const versionBranch = `release-${branch}`;
+  const versionBranch = `release-${version}`;
 
   console.log('versionBranch ->', versionBranch);
 
