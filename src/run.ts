@@ -418,3 +418,79 @@ export async function runVersion({
     };
   }
 }
+
+export async function runNextRelease({ githubToken }: { githubToken: string }) {
+  const cwd = process.cwd();
+
+  const octokit = setupOctokit(githubToken);
+
+  const base = github.context.ref.replace("refs/heads/", "");
+  core.info('base ->' + base);
+
+  await exec("node", [resolveFrom(cwd, "@changesets/cli/bin.js"), 'version'], {
+    cwd,
+  });
+
+  const mainPackageJson = await fs.readFile(path.resolve(cwd, 'package.json'), "utf8");
+  const { version } = JSON.parse(mainPackageJson);
+
+  let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
+
+  core.info('version ->' + version);
+
+  const versionBranch = `release-${version}`;
+
+  console.log('versionBranch ->', versionBranch);
+
+  // let { preState } = await readChangesetState(cwd);
+
+  await gitUtils.switchToMaybeExistingBranch(versionBranch);
+
+  // project with `commit: true` setting could have already committed files
+  if (!(await gitUtils.checkIfClean())) {
+    const finalCommitMessage = `Bump versions`;
+    await gitUtils.commitAll(finalCommitMessage);
+  }
+
+  await gitUtils.push(versionBranch, { force: true });
+
+  let searchQuery = `repo:${repo}+state:open+head:${versionBranch}+base:${base}+is:pull-request`;
+  let searchResultPromise = octokit.rest.search.issuesAndPullRequests({
+    q: searchQuery,
+  });
+
+  let searchResult = await searchResultPromise;
+  core.info(JSON.stringify(searchResult.data, null, 2));
+
+  const finalPrTitle = `Release ${version}`;
+  const prBody = 'testing next release';
+
+  if (searchResult.data.items.length === 0) {
+    core.info("creating pull request");
+    const { data: newPullRequest } = await octokit.rest.pulls.create({
+      base,
+      head: versionBranch,
+      title: finalPrTitle,
+      body: prBody,
+      ...github.context.repo,
+    });
+
+    return {
+      pullRequestNumber: newPullRequest.number,
+    };
+  } else {
+    const [pullRequest] = searchResult.data.items;
+
+    core.info(`updating found pull request #${pullRequest.number}`);
+    await octokit.rest.pulls.update({
+      pull_number: pullRequest.number,
+      title: finalPrTitle,
+      body: prBody,
+      ...github.context.repo,
+    });
+
+    return {
+      pullRequestNumber: pullRequest.number,
+    };
+  }
+}
