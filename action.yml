@@ -32,6 +32,10 @@ inputs:
     description: "A boolean value to indicate to start a new release. Default to `false`"
     required: false
     default: false
+  nextReleaseType:
+    description: "The type of the next release. Possible values are: `next` or `patch`. Default to `patch`"
+    required: false
+    default: "patch"
 outputs:
   published:
     description: A boolean value to indicate whether a publishing is happened or not

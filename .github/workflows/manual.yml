@@ -3,14 +3,14 @@ name: New release
 on:
   workflow_dispatch:
     inputs:
-      name:
+      release-type:
         type: choice
         description: Release type
         default: Next
         required: true
         options:
-        - Next
-        - Patch
+        - next
+        - patch
       base-ref:
         description: Base version
         default: master
@@ -41,5 +41,6 @@ jobs:
       uses: ./
       with:
         nextRelease: true
+        nextReleaseType: ${{ github.event.inputs.release-type }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

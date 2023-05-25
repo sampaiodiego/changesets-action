@@ -54,8 +54,11 @@ const getOptionalInput = (name: string) => core.getInput(name) || undefined;
         core.warning('No changesets found for next release, skipping');
         return;
       }
-      core.info("nextRelease is true, attempting to publish any unpublished packages to npm");
-      runNextRelease({ githubToken });
+      const type = core.getInput('nextReleaseType');
+
+      core.info(`Proceeding with next release (type ${type})`);
+
+      runNextRelease({ githubToken, type });
       return;
     }
     case !hasChangesets && !hasPublishScript:

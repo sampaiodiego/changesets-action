@@ -419,13 +419,20 @@ export async function runVersion({
   }
 }
 
-export async function runNextRelease({ githubToken }: { githubToken: string }) {
+export async function runNextRelease({ githubToken, type }: { githubToken: string; type: string }) {
   const cwd = process.cwd();
 
   const octokit = setupOctokit(githubToken);
 
   const base = github.context.ref.replace("refs/heads/", "");
   core.info('base ->' + base);
+
+  // for regular release we first cut a release-candidate
+  if (type === 'next') {
+    await exec("node", [resolveFrom(cwd, "@changesets/cli/bin.js"), 'pre', 'enter', 'rc'], {
+      cwd,
+    });
+  }
 
   await exec("node", [resolveFrom(cwd, "@changesets/cli/bin.js"), 'version'], {
     cwd,
