@@ -428,7 +428,10 @@ export async function createReleaseBranch({ githubToken, base }: { githubToken: 
   core.info('base ->' + base);
   await exec("git", ["checkout", base]);
 
-  const { stdout: sha } = await getExecOutput('git', ['log', '-1', "--format='%H'"]);
+  const { stdout } = await getExecOutput('git', ['log', '-1', "--format='%H'"]);
+  core.info('stdout ->' + stdout);
+
+  const sha = stdout.replace(/'/g, '').trim();
   core.info('sha ->' + sha);
 
   const mainPackageJson = await fs.readFile(path.resolve(cwd, 'package.json'), "utf8");
@@ -452,17 +455,17 @@ export async function createReleaseBranch({ githubToken, base }: { githubToken: 
 
   const octokit = setupOctokit(githubToken);
 
-  const repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
-
-  await octokit.request(`POST /repos/${repo}/git/refs`, {
-    owner: 'OWNER',
-    repo: 'REPO',
+  const result = await octokit.request(`POST /repos/{owner}/{repo}/git/refs`, {
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
     ref: `refs/heads/${versionBranch}`,
     sha,
     headers: {
       'X-GitHub-Api-Version': '2022-11-28'
     }
-  })
+  });
+
+  core.info('result ->' + JSON.stringify(result, null, 2));
 }
 
 export async function runNextRelease({ githubToken, type, base }: { githubToken: string; type: string; base: string }) {
