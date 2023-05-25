@@ -428,7 +428,7 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
     cwd,
   });
 
-  const mainPackageJson = await fs.readFile('../package.json', "utf8");
+  const mainPackageJson = await fs.readFile(path.resolve(cwd, 'package.json'), "utf8");
   const { version } = JSON.parse(mainPackageJson);
 
   let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
