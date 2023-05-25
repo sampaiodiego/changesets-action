@@ -38,12 +38,19 @@ jobs:
     - name: Build
       run: yarn build
 
-    - name: Trigger next release
-      id: changesets
-      uses: ./
-      with:
-        nextRelease: true
-        nextReleaseType: ${{ github.event.inputs.release-type }}
-        nextReleaseBase: ${{ github.event.inputs.base-ref }}
+    # - name: Trigger next release
+    #   id: changesets
+    #   uses: ./
+    #   with:
+    #     nextRelease: true
+    #     nextReleaseType: ${{ github.event.inputs.release-type }}
+    #     nextReleaseBase: ${{ github.event.inputs.base-ref }}
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: peterjgrainger/action-create-branch@v2.2.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        branch: 'release-1.5.0-manual'
+        sha: '8a2051020292719a1452eff253bedb97d3fc1061'
