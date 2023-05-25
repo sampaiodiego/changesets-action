@@ -51,7 +51,7 @@ const getOptionalInput = (name: string) => core.getInput(name) || undefined;
   switch (true) {
     case nextRelease: {
       if (!hasChangesets) {
-        core.warning('No changesets found for nexts release, skipping');
+        core.warning('No changesets found for next release, skipping');
         return;
       }
       core.info("nextRelease is true, attempting to publish any unpublished packages to npm");
