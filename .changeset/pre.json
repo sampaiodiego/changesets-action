@@ -1,0 +1,11 @@
+{
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "@changesets/action": "1.4.4"
+  },
+  "changesets": [
+    "sour-flowers-decide",
+    "young-tigers-hide"
+  ]
+}

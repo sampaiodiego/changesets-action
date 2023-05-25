@@ -1,5 +1,17 @@
 # @changesets/action
 
+## 1.5.0-rc.0
+
+### Minor Changes
+
+- [`4421015`](https://github.com/changesets/action/commit/44210150489f82505d1d039065e35ec62eb0c9b7) Thanks [@sampaiodiego](https://github.com/sampaiodiego)! - adding a minor to see the update
+
+### Patch Changes
+
+- [`4421015`](https://github.com/changesets/action/commit/44210150489f82505d1d039065e35ec62eb0c9b7) Thanks [@sampaiodiego](https://github.com/sampaiodiego)! - Adding a patch change set.
+
+  This is just for testing the new action.
+
 ## 1.4.4
 
 ### Patch Changes
