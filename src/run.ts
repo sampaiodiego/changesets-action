@@ -421,6 +421,8 @@ export async function runVersion({
 
 export async function createReleaseBranch({ base }: { base: string}) {
   const cwd = process.cwd();
+  core.info('cwd ->' + cwd);
+
   // const { version: currentVersion } = require('../package.json');
 
   core.info('base ->' + base);
