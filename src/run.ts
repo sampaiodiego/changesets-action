@@ -431,7 +431,7 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
   const { version } = require("../package.json");
 
   let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
-  const branch = github.context.ref.replace("refs/heads/", "");
+  const branch = 'main'; // TODO main for next or "base" for patch (old value github.context.ref.replace("refs/heads/", "");)
 
   core.info('version ->' + version);
   core.info('branch ->' + branch);
