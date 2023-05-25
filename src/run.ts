@@ -424,6 +424,9 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
 
   const octokit = setupOctokit(githubToken);
 
+  const base = github.context.ref.replace("refs/heads/", "");
+  core.info('base ->' + base);
+
   await exec("node", [resolveFrom(cwd, "@changesets/cli/bin.js"), 'version'], {
     cwd,
   });
@@ -432,10 +435,8 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
   const { version } = JSON.parse(mainPackageJson);
 
   let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
-  const branch = 'main'; // TODO main for next or "base" for patch (old value github.context.ref.replace("refs/heads/", "");)
 
   core.info('version ->' + version);
-  core.info('branch ->' + branch);
 
   const versionBranch = `release-${version}`;
 
@@ -453,7 +454,7 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
 
   await gitUtils.push(versionBranch, { force: true });
 
-  let searchQuery = `repo:${repo}+state:open+head:${versionBranch}+base:${branch}+is:pull-request`;
+  let searchQuery = `repo:${repo}+state:open+head:${versionBranch}+base:${base}+is:pull-request`;
   let searchResultPromise = octokit.rest.search.issuesAndPullRequests({
     q: searchQuery,
   });
@@ -467,7 +468,7 @@ export async function runNextRelease({ githubToken }: { githubToken: string }) {
   if (searchResult.data.items.length === 0) {
     core.info("creating pull request");
     const { data: newPullRequest } = await octokit.rest.pulls.create({
-      base: branch,
+      base,
       head: versionBranch,
       title: finalPrTitle,
       body: prBody,

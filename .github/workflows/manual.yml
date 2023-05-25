@@ -25,4 +25,21 @@ jobs:
       with:
         ref: ${{ github.event.inputs.base-ref }}
 
-    - run: cat package.json
+    - name: Use Node.js 16
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+
+    - name: Install Dependencies
+      run: yarn --frozen-lockfile
+
+    - name: Build
+      run: yarn build
+
+    - name: Try out next release
+      id: changesets
+      uses: ./
+      with:
+        nextRelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
