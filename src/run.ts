@@ -419,7 +419,7 @@ export async function runVersion({
   }
 }
 
-export async function createReleaseBranch({ base }: { base: string}) {
+export async function createReleaseBranch({ githubToken, base }: { githubToken: string; base: string}) {
   const cwd = process.cwd();
   core.info('cwd ->' + cwd);
 
@@ -427,6 +427,9 @@ export async function createReleaseBranch({ base }: { base: string}) {
 
   core.info('base ->' + base);
   await exec("git", ["checkout", base]);
+
+  const { stdout: sha } = await getExecOutput('git', ['log', '-1', "--format='%H'"]);
+  core.info('sha ->' + sha);
 
   const mainPackageJson = await fs.readFile(path.resolve(cwd, 'package.json'), "utf8");
   const { version: currentVersion } = JSON.parse(mainPackageJson);
@@ -437,12 +440,29 @@ export async function createReleaseBranch({ base }: { base: string}) {
 
   const versionBranch = `release-${nextVersion}`;
 
-  console.log('versionBranch ->', versionBranch);
+  // console.log('versionBranch ->', versionBranch);
 
-  // the base branch will be the one that triggered the workflow
-  await gitUtils.switchToMaybeExistingBranch(versionBranch);
+  // // the base branch will be the one that triggered the workflow
+  // await gitUtils.switchToMaybeExistingBranch(versionBranch);
 
-  await gitUtils.push(versionBranch, { force: true });
+  // const { stdout } = await getExecOutput("git", ["status"]);
+  // core.info(stdout);
+
+  // await gitUtils.push(versionBranch, { force: true });
+
+  const octokit = setupOctokit(githubToken);
+
+  const repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
+
+  await octokit.request(`POST /repos/${repo}/git/refs`, {
+    owner: 'OWNER',
+    repo: 'REPO',
+    ref: `refs/heads/${versionBranch}`,
+    sha,
+    headers: {
+      'X-GitHub-Api-Version': '2022-11-28'
+    }
+  })
 }
 
 export async function runNextRelease({ githubToken, type, base }: { githubToken: string; type: string; base: string }) {
@@ -474,7 +494,7 @@ export async function runNextRelease({ githubToken, type, base }: { githubToken:
   const mainPackageJson = await fs.readFile(path.resolve(cwd, 'package.json'), "utf8");
   const { version } = JSON.parse(mainPackageJson);
 
-  let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
+  const repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
 
   core.info('version ->' + version);
 
