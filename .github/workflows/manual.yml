@@ -1,8 +1,5 @@
 name: New release
 
-permissions:
-  workflows: write
-
 on:
   workflow_dispatch:
     inputs:
