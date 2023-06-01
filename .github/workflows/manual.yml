@@ -64,4 +64,4 @@ jobs:
 
         git branch
 
-        git push --set-upstream origin release-1.5.1
+        git push --set-upstream origin release-1.4.5
