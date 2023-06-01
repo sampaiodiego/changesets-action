@@ -57,7 +57,7 @@ jobs:
 
     - run: npm i -g @rocket.chat/houston@next
 
-    - run: houston create-branch -t ${{ github.event.inputs.name }} -b ${{ github.event.inputs.base-ref }}
+    - run: houston create-branch -t ${{ github.event.inputs.release-type }} -b ${{ github.event.inputs.base-ref }}
 
     - run: |
         git status
