@@ -48,9 +48,20 @@ jobs:
     #   env:
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - uses: peterjgrainger/action-create-branch@v2.2.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        branch: 'release-1.5.0-manual'
-        sha: '8a2051020292719a1452eff253bedb97d3fc1061'
+    # - uses: peterjgrainger/action-create-branch@v2.2.0
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     branch: 'release-1.5.0-manual'
+    #     sha: '8a2051020292719a1452eff253bedb97d3fc1061'
+
+    - run: npm i -g @rocket.chat/houston@next
+
+    - run: houston create-branch -t ${{ github.event.inputs.name }} -b ${{ github.event.inputs.base-ref }}
+
+    - run: |
+        git status
+
+        git branch
+
+        git push --set-upstream origin release-1.5.1
